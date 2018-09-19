@@ -6,3 +6,12 @@
 /pkg/
 /spec/reports/
 /tmp/
+
+Makefile
+*.bundle
+*.o
+*.rbc
+/.bundle/
+Gemfile.lock
+.DS_Store
+.ruby-version

@@ -1,15 +1,15 @@
 # PngStitcher
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/png_stitcher`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://travis-ci.org/cph/png_stitcher.svg)](https://travis-ci.org/cph/png_stitcher)
 
-TODO: Delete this and the text above, and describe your gem
+An optimized way to stack an arbitrary number of PNGs with the same width.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'png_stitcher'
+gem "png_stitcher"
 ```
 
 And then execute:
@@ -22,7 +22,16 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "png_stitcher"
+
+a = File.binread("/path/to/a.png")
+b = File.binread("/path/to/b.png")
+c = PngStitcher.stitch([a, b])
+File.open("/path/to/c.png", "wb") { |f| f.write(c) }
+
+# c.png now contains a.png + b.png
+```
 
 ## Development
 
@@ -32,7 +41,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/png_stitcher.
+Bug reports and pull requests are welcome on GitHub at https://github.com/cph/png_stitcher.
 
 ## License
 

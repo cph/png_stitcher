@@ -18,6 +18,15 @@ class PngStitcherTest < Minitest::Test
       actual = PngStitcher.stitch(files)
       assert_equal expected, ChunkyPNG::Canvas.from_blob(actual)
     end
+
+    should "retain the DPI of the input images" do
+      image = File.binread(fixture_file("0.png"))
+
+      expected = ChunkyPNG::Datastream.from_blob(image)
+      actual = ChunkyPNG::Datastream.from_blob( PngStitcher.stitch([ image ]) )
+
+      assert_equal expected.physical_chunk, actual.physical_chunk
+    end
   end
 
 private

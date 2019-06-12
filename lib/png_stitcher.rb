@@ -11,13 +11,15 @@ module PngStitcher
       streams = []
       height = 0
       width = nil
-      palette = nil
+      palette_chunk = nil
+      transparency_chunk = nil
       physical_chunk = nil
 
       blobs.each do |blob|
         stream = ChunkyPNG::Datastream.from_blob(blob)
         physical_chunk ||= stream.physical_chunk
-        palette ||= ChunkyPNG::Palette.from_chunks(stream.palette_chunk, stream.transparency_chunk)
+        palette_chunk ||= stream.palette_chunk
+        transparency_chunk ||= stream.transparency_chunk
         header = stream.header_chunk
         width ||= header.width
         height += header.height
@@ -26,7 +28,7 @@ module PngStitcher
         raise ArgumentError, "Pixel Depth must be 1 bit per pixel" unless header.depth == 1
         raise ArgumentError, "Interlacing must be disabled" unless header.interlace == ChunkyPNG::INTERLACING_NONE
         raise ArgumentError, "All of the images must be the same width" unless header.width == width
-        raise ArgumentError, "All of the images must have the same palette" unless palette == ChunkyPNG::Palette.from_chunks(stream.palette_chunk, stream.transparency_chunk)
+        raise ArgumentError, "All of the images must have the same palette" unless palette_chunk.content == stream.palette_chunk.content && transparency_chunk&.content == stream.transparency_chunk&.content
 
         streams << stream
       end
@@ -40,8 +42,8 @@ module PngStitcher
         color: ChunkyPNG::COLOR_INDEXED,
         depth: 1,
         interlace: 0)
-      stream.palette_chunk      = palette.to_plte_chunk
-      stream.transparency_chunk = palette.to_trns_chunk unless palette.opaque?
+      stream.palette_chunk      = palette_chunk
+      stream.transparency_chunk = transparency_chunk
       stream.physical_chunk     = physical_chunk
 
       stream.data_chunks = ChunkyPNG::Chunk::ImageData.split_in_chunks(data)
